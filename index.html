@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>下班倒计时</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.5s;
+    }
+    #container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 48px 32px 32px 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      transition: box-shadow 0.3s;
+    }
+    h1 {
+      font-size: 2em;
+      color: #ff8247;
+      letter-spacing: 2px;
+      margin-bottom: 28px;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(253,160,133,0.15);
+    }
+    .settings {
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+    label {
+      font-size: 1em;
+      color: #555;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    input[type="time"] {
+      border: 1px solid #ff8247;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 1.1em;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type="time"]:focus {
+      border-color: #faad7d;
+    }
+    button {
+      background: linear-gradient(90deg, #ff8247 0%, #fda085 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 24px;
+      font-size: 1em;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 12px rgba(253,160,133,0.15);
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #fda085 0%, #ff8247 100%);
+      transform: translateY(-2px) scale(1.05);
+    }
+    #countdown {
+      font-size: 2.8em;
+      color: #faad7d;
+      margin: 24px 0;
+      font-family: 'Roboto Mono', 'Consolas', monospace;
+      font-weight: bold;
+      animation: pulse 1.2s infinite;
+      letter-spacing: 1px;
+    }
+    @keyframes pulse {
+      0% { color: #faad7d; text-shadow: 0 0 8px #faad7d44; }
+      50% { color: #ff8247; text-shadow: 0 0 16px #ff824744; }
+      100% { color: #faad7d; text-shadow: 0 0 8px #faad7d44; }
+    }
+    #tips {
+      font-size: 1.05em;
+      color: #888;
+      background: #fef6e4;
+      border-radius: 8px;
+      padding: 8px 14px;
+      margin-top: 12px;
+      display: inline-block;
+    }
+    @media (max-width: 500px) {
+      #container {
+        padding: 32px 10px 20px 10px;
+        max-width: 95vw;
+      }
+      h1 { font-size: 1.3em; }
+      #countdown { font-size: 2em; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="container">
+    <h1>下班倒计时</h1>
+    <div class="settings">
+      <label for="offwork">设置下班时间（24小时制）：</label>
+      <input type="time" id="offwork" value="18:00">
+      <button onclick="resetCountdown()">确定</button>
+    </div>
+    <div id="countdown">距离下班还有 --:--:--</div>
+    <span id="tips">祝你工作顺利，早点下班！</span>
+  </div>
+  <script>
+    let offworkTime = "18:00";
+    function resetCountdown() {
+      offworkTime = document.getElementById('offwork').value;
+      updateCountdown();
+    }
+    function updateCountdown() {
+      const now = new Date();
+      const [hour, min] = offworkTime.split(':').map(Number);
+      let offwork = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, min, 0);
+      if (now > offwork) {
+        document.getElementById('countdown').textContent = "已经下班啦！";
+        document.getElementById('countdown').style.color = "#43d19c";
+        document.getElementById('tips').textContent = "今天辛苦啦，快回家休息吧！";
+        return;
+      } else {
+        document.getElementById('countdown').style.color = "#faad7d";
+        document.getElementById('tips').textContent = "祝你工作顺利，早点下班！";
+      }
+      let diff = Math.max(0, offwork - now);
+      let h = Math.floor(diff / (1000 * 60 * 60));
+      let m = Math.floor((diff / (1000 * 60)) % 60);
+      let s = Math.floor((diff / 1000) % 60);
+      document.getElementById('countdown').textContent =
+        `距离下班还有 ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+    document.querySelector('button').addEventListener('click', updateCountdown);
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
